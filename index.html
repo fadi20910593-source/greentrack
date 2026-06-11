@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مُولّد الـ QR الذكي للمزارع</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f9f4; padding: 50px; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-block; }
+        button { background-color: #2e7d32; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; margin-top: 15px; }
+        button:hover { background-color: #1b5e20; }
+        #qrcode { margin-top: 20px; display: flex; justify-content: center; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>نظام GreenTrack الذكي 🌿</h2>
+        <p>اضغط على الزر لتوليد رمز QR لوصلة شجرة تجريبية:</p>
+        
+        <button onclick="generateMyQR()">توليد الـ QR Code الآن</button>
+        
+        <div id="qrcode"></div>
+    </div>
+
+    <script>
+        function generateMyQR() {
+            // تنظيف أي كود قديم
+            document.getElementById("qrcode").innerHTML = "";
+            
+            // رابط وهمي لشجرة ليمون تجريبية يحمل رقم معرف فريد
+            let demoTreeURL = "https://greentrack.com/scan/tree-lemon-001";
+            
+            // تشغيل المكتبة لتوليد الكود
+            new QRCode(document.getElementById("qrcode"), {
+                text: demoTreeURL,
+                width: 180,
+                height: 180,
+                colorDark : "#1b5e20", // لون الـ QR أخضر زراعي
+                colorLight : "#ffffff"
+            });
+        }
+    </script>
+</body>
+</html>
