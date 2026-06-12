@@ -3,193 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام GreenTrack الذكي 🌿</title>
+    <title>مفكرة تتبع الأشجار 🌿</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        /* تحسينات التصميم العام والخلفية */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             text-align: center; 
             background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); 
-            min-height: 100vh;
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-sizing: border-box;
+            min-height: 100vh; margin: 0; padding: 40px 20px;
+            display: flex; justify-content: center; align-items: center; box-sizing: border-box;
         }
-
-        /* تصميم البطاقة الرئيسية */
         .card { 
-            background: #ffffff; 
-            padding: 35px 25px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 25px rgba(46, 125, 50, 0.15); 
-            width: 100%; 
-            max-width: 440px; 
-            text-align: right; 
-            box-sizing: border-box; 
-            transition: transform 0.3s ease;
+            background: #ffffff; padding: 35px 25px; border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(46, 125, 50, 0.15); width: 100%; max-width: 440px; 
+            text-align: right; box-sizing: border-box; transition: transform 0.3s ease; position: relative;
         }
+        .card:hover { transform: translateY(-5px); }
+        h2 { text-align: center; margin-bottom: 25px; color: #1b5e20; font-size: 24px; font-weight: bold; margin-top: 0; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: #2e7d32; font-size: 15px; }
+        input, textarea, select { 
+            width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; 
+            box-sizing: border-box; font-size: 15px; background-color: #fbfdfb; transition: all 0.3s ease; font-family: inherit;
+        }
+        input:focus, textarea:focus, select:focus { border-color: #4caf50; background-color: #ffffff; box-shadow: 0 0 8px rgba(76, 175, 80, 0.2); outline: none; }
+        textarea { resize: vertical; height: 90px; }
         
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        /* عنوان النظام */
-        h2 { 
-            text-align: center; 
-            margin-bottom: 25px; 
-            color: #1b5e20; 
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 0; 
-        }
-
-        /* مجموعات الحقول */
-        .form-group { 
-            margin-bottom: 20px; 
-        }
-
-        label { 
-            display: block; 
-            font-weight: 600; 
-            margin-bottom: 8px; 
-            color: #2e7d32; 
-            font-size: 15px;
-        }
-
-        /* تصميم خانات الإدخال والنصوص */
-        input, textarea { 
-            width: 100%; 
-            padding: 12px 15px; 
-            border: 2px solid #e0e0e0; 
-            border-radius: 10px; 
-            box-sizing: border-box; 
-            font-size: 15px; 
-            background-color: #fbfdfb;
-            transition: all 0.3s ease;
-            font-family: inherit;
-        }
-
-        input:focus, textarea:focus {
-            border-color: #4caf50;
-            background-color: #ffffff;
-            box-shadow: 0 0 8px rgba(76, 175, 80, 0.2);
-            outline: none;
-        }
-
-        textarea { 
-            resize: vertical; 
-            height: 90px; 
-        }
-
-        /* تصميم الأزرار الاحترافي */
         button { 
-            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); 
-            color: white; 
-            border: none; 
-            padding: 14px 20px; 
-            font-size: 16px; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            margin-top: 10px; 
-            width: 100%; 
-            font-weight: bold; 
-            box-shadow: 0 4px 10px rgba(27, 94, 32, 0.3);
-            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); color: white; border: none; padding: 14px 20px; 
+            font-size: 16px; border-radius: 10px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold; 
+            box-shadow: 0 4px 10px rgba(27, 94, 32, 0.3); transition: all 0.3s ease;
         }
-
-        button:hover { 
-            background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%); 
-            box-shadow: 0 6px 15px rgba(27, 94, 32, 0.4);
-            transform: translateY(-1px);
-        }
-
-        button:active {
-            transform: translateY(1px);
-        }
-
-        /* منطقة الـ QR Code */
-        #qrcode { 
-            margin-top: 25px; 
-            display: flex; 
-            justify-content: center; 
-            padding: 15px;
-            background: #f9f9f9;
-            border-radius: 12px;
-            border: 1px dashed #c8e6c9;
-        }
+        button:hover { background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%); box-shadow: 0 6px 15px rgba(27, 94, 32, 0.4); transform: translateY(-1px); }
         
-        #qrcode img {
-            border: 4px solid white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
+        #qrcode { margin-top: 25px; display: flex; flex-direction: column; align-items: center; padding: 15px; background: #f9f9f9; border-radius: 12px; border: 1px dashed #c8e6c9; }
+        #qrcode img { border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 10px; }
+        
+        .info-display { display: none; text-align: right; }
+        .info-item { background: #f1f8e9; padding: 15px; border-right: 5px solid #2e7d32; margin-bottom: 12px; border-radius: 8px 0 0 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .info-label { font-size: 13px; color: #558b2f; font-weight: bold; display: block; margin-bottom: 4px; }
+        .info-value { font-size: 17px; color: #1b5e20; font-weight: bold; display: block; }
+        
+        /* شاشات عرض الصور وتجميلها */
+        .tree-image-display { width: 100%; height: 200px; border-radius: 12px; object-fit: cover; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: none; }
 
-        /* واجهة عرض البيانات عند المسح */
-        .info-display { 
-            display: none; 
-            text-align: right; 
-        }
+        /* ملصقات الحالة الملونة */
+        .badge { display: inline-block; padding: 6px 12px; font-size: 13px; font-weight: bold; border-radius: 20px; color: white; margin-bottom: 15px; }
+        .badge-active { background-color: #2e7d32; }
+        .badge-success { background-color: #0288d1; }
+        .badge-failed { background-color: #d32f2f; }
 
-        .info-item { 
-            background: #f1f8e9; 
-            padding: 15px; 
-            border-right: 5px solid #2e7d32; 
-            margin-bottom: 12px; 
-            border-radius: 8px 0 0 8px; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
+        .tip-box { background-color: #e3f2fd; border-right: 5px solid #0288d1; padding: 12px; border-radius: 0 8px 8px 0; font-size: 14px; color: #0d47a1; margin-bottom: 15px; font-weight: 500; }
+        
+        .btn-container { display: flex; gap: 10px; margin-top: 5px; }
+        .btn-secondary { background: linear-gradient(135deg, #78909c 0%, #546e7a 100%); box-shadow: 0 4px 10px rgba(84, 110, 122, 0.3); }
+        .btn-secondary:hover { background: linear-gradient(135deg, #90a4ae 0%, #78909c 100%); }
+        .btn-update { background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); box-shadow: 0 4px 10px rgba(245, 124, 0, 0.3); }
+        .btn-update:hover { background: linear-gradient(135deg, #ffa726 0%, #ff9800 100%); }
+        
+        #updateSection { background: #fffde7; padding: 15px; border-radius: 10px; border: 1px solid #fff59d; margin-top: 15px; display: none; }
+        #loadingStatus { font-weight: bold; color: #2e7d32; text-align: center; padding: 30px 0; font-size: 16px; }
 
-        .info-label { 
-            font-size: 13px; 
-            color: #558b2f; 
-            font-weight: bold; 
-            display: block; 
-            margin-bottom: 4px;
-        }
-
-        .info-value { 
-            font-size: 17px; 
-            color: #1b5e20; 
-            font-weight: bold; 
-            display: block; 
-        }
-
-        #loadingStatus { 
-            font-weight: bold; 
-            color: #2e7d32; 
-            text-align: center; 
-            padding: 30px 0; 
-            font-size: 16px;
-        }
-
-        /* زر العودة المخصص لإدخال شجرة جديدة */
-        .btn-secondary {
-            background: linear-gradient(135deg, #78909c 0%, #546e7a 100%);
-            box-shadow: 0 4px 10px rgba(84, 110, 122, 0.3);
-        }
-        .btn-secondary:hover {
-            background: linear-gradient(135deg, #90a4ae 0%, #78909c 100%);
-            box-shadow: 0 6px 15px rgba(84, 110, 122, 0.4);
+        /* تهيئة نافذة الطباعة */
+        @media print {
+            body { background: white; padding: 0; display: block; }
+            .card { box-shadow: none; max-width: 100%; padding: 0; }
+            #inputFormSection, #displaySection, h2 { display: none !important; }
+            #printArea { display: block !important; text-align: center; margin-top: 50px; }
+            #printArea img { width: 250px; height: 250px; }
+            .print-title { font-size: 22px; font-weight: bold; margin-top: 15px; color: black; font-family: sans-serif; }
         }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h2>نظام GreenTrack الذكي 🌿</h2>
+        <h2>مفكرة تتبع الأشجار 🌿</h2>
         
         <div id="inputFormSection">
             <div class="form-group">
-                <label for="treeType">🌳 نوع الشجرة:</label>
+                <label for="treeType">🌱 نوع الشجرة / الشتلة:</label>
                 <input type="text" id="treeType" placeholder="مثال: تفاح، لوز، زيتون...">
             </div>
 
             <div class="form-group">
-                <label for="graftingMethod">✂️ طريقة التطعيم / الترقيد:</label>
+                <label for="graftingMethod">🛠️ نوع العملية (تطعيم / ترقيد):</label>
                 <input type="text" id="graftingMethod" placeholder="مثال: ترقيد هوائي، تطعيم بالقلم...">
+            </div>
+
+            <div class="form-group">
+                <label for="treeImage">📸 رابط صورة الشجرة (اختياري):</label>
+                <input type="url" id="treeImage" placeholder="ضع رابط صورة الشجرة هنا إذا توفر...">
             </div>
 
             <div class="form-group">
@@ -199,6 +103,11 @@
             
             <button onclick="handleFormSubmit()">توليد الـ QR Code الآن</button>        
             
+            <div class="btn-container">
+                <button id="btnCopyLink" class="btn-secondary" style="display:none;" onclick="copyGeneratedLink()">📋 نسخ الرابط</button>
+                <button id="btnPrintQR" class="btn-secondary" style="background: #37474f; display:none;" onclick="window.print()">🖨️ طباعة الملصق</button>
+            </div>
+            
             <div id="qrcode"></div>
         </div>
 
@@ -206,80 +115,124 @@
             <div id="loadingStatus">جاري قراءة سحابة الشجرة... 🔄</div>
             
             <div id="treeDataDetails" style="display: none;">
+                <img id="viewTreeImg" class="tree-image-display" src="" alt="صورة الشجرة">
+
+                <div style="text-align: center;">
+                    <span id="statusBadge" class="badge badge-active">قيد الانتظار / نشط 🟢</span>
+                </div>
+
                 <div class="info-item">
-                    <span class="info-label">🌳 نوع الشجرة المتواجدة:</span>
+                    <span class="info-label">📅 تاريخ تسجيل العملية:</span>
+                    <span id="viewDate" class="info-value" style="color: #d32f2f;">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">⏳ عمر العملية الحالي:</span>
+                    <span id="viewAge" class="info-value" style="color: #e65100;">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">🌱 نوع الشجرة المسجلة:</span>
                     <span id="viewTreeType" class="info-value">-</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">✂️ طريقة التطعيم المستخدمة:</span>
+                    <span class="info-label">🛠️ العملية التي أُجريت عليها:</span>
                     <span id="viewMethod" class="info-value">-</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">📝 ملاحظات وتفاصيل حقلية:</span>
                     <span id="viewNotes" class="info-value">-</span>
                 </div>
+
+                <div id="tipBox" class="tip-box">💡 نصيحة حقلية تظهر بناءً على عمليتك...</div>
+                
+                <button class="btn-update" onclick="toggleUpdateForm()">✏️ تحديث الملاحظات أو الحالة</button>
+                
+                <div id="updateSection">
+                    <div class="form-group">
+                        <label for="updateStatusSelect">🔄 تغيير حالة العملية:</label>
+                        <select id="updateStatusSelect">
+                            <option value="active">قيد الانتظار / نشط 🟢</option>
+                            <option value="success">نجحت العملية وتم النقل 🔵</option>
+                            <option value="failed">فشلت العملية وجف الغصن 🔴</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateNotesInput">📝 تحديث الملاحظات:</label>
+                        <textarea id="updateNotesInput"></textarea>
+                    </div>
+                    <button onclick="submitTreeUpdate()">حفظ التعديل السحابي 💾</button>
+                </div>
+
                 <button class="btn-secondary" onclick="window.location.href=window.location.pathname">إدخال شجرة جديدة ➕</button>
             </div>
         </div>
     </div>
 
-    <script>
-        function generateMyQR(actualURL) {
-            document.getElementById("qrcode").innerHTML = "";
-            new QRCode(document.getElementById("qrcode"), {
-                text: actualURL,
-                width: 180,
-                height: 180,
-                colorDark : "#1b5e20",
-                colorLight : "#ffffff"
-            });
-        }
-    </script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <div id="printArea" style="display: none;">
+        <div id="printQRTarget"></div>
+        <div id="printQRTitle" class="print-title">مفكرة تتبع الأشجار</div>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
       const SUPABASE_URL = 'https://slunnljduvspmghgzrlc.supabase.co';
-      // ⚠️ ضع مفتاح anon_key الخاص بك هنا النظيف والكامل
+      // ⚠️ ضع مفتاح anon_key النظيف والكامل الخاص بك هنا
       const SUPABASE_ANON_KEY = 'sb_publishable_TcEUmD0fKLopTF2MgnQu4g_nf9ui0vs';
 
       const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      let currentTreeId = ""; 
+      let currentGeneratedUrl = "";
 
       function handleFormSubmit() {
           const treeType = document.getElementById("treeType").value.trim();
           const method = document.getElementById("graftingMethod").value.trim();
+          const imgUrl = document.getElementById("treeImage").value.trim();
           const notes = document.getElementById("treeNotes").value.trim();
 
           if (!treeType || !method) {
               alert("رجاءً قم بتعبئة نوع الشجرة وطريقة التطعيم أولاً!");
               return;
           }
-          saveTreeToDatabase(treeType, method, notes);
+          saveTreeToDatabase(treeType, method, imgUrl, notes);
       }
 
-      async function saveTreeToDatabase(treeType, method, notes) {
+      async function saveTreeToDatabase(treeType, method, imgUrl, notes) {
         const { data, error } = await supabaseClient
           .from('trees')
-          .insert([{ tree_type: treeType, grafting_method: method, notes: notes }])
+          .insert([{ tree_type: treeType, grafting_method: method, notes: notes, status: 'active', image_url: imgUrl }])
           .select();
 
         if (error) {
           alert('حدث خطأ أثناء الحفظ: ' + error.message);
         } else {
-          const treeId = data[0].id;
-          const qrUrl = `https://fadi20910593-source.github.io/greentrack/?id=${treeId}`;
-          generateMyQR(qrUrl);
+          currentTreeId = data[0].id;
+          currentGeneratedUrl = `https://fadi20910593-source.github.io/greentrack/?id=${currentTreeId}`;
+          
+          document.getElementById("qrcode").innerHTML = "";
+          document.getElementById("printQRTarget").innerHTML = "";
+          
+          new QRCode(document.getElementById("qrcode"), { text: currentGeneratedUrl, width: 180, height: 180, colorDark : "#1b5e20", colorLight : "#ffffff" });
+          new QRCode(document.getElementById("printQRTarget"), { text: currentGeneratedUrl, width: 250, height: 250, colorDark : "#000000", colorLight : "#ffffff" });
+          
+          document.getElementById("printQRTitle").innerText = `مفكرة الأشجار: ${treeType} (${method})`;
+          document.getElementById('btnCopyLink').style.display = "block";
+          document.getElementById('btnPrintQR').style.display = "block";
+          alert('تم الحفظ سحابياً وتجهيز بطاقة الطباعة والـ QR!');
         }
+      }
+
+      function copyGeneratedLink() {
+          navigator.clipboard.writeText(currentGeneratedUrl);
+          alert('📋 تم نسخ رابط الشجرة بنجاح!');
       }
 
       window.addEventListener('DOMContentLoaded', () => {
           const urlParams = new URLSearchParams(window.location.search);
-          const treeId = urlParams.get('id');
+          currentTreeId = urlParams.get('id');
 
-          if (treeId) {
+          if (currentTreeId) {
               document.getElementById('inputFormSection').style.display = 'none';
               document.getElementById('displaySection').style.display = 'block';
-              fetchTreeData(treeId);
+              fetchTreeData(currentTreeId);
           }
       });
 
@@ -291,14 +244,77 @@
               .single();
 
           if (error) {
-              document.getElementById('loadingStatus').innerHTML = "❌ عذراً، لم يتم العثور على بيانات لهذه الشجرة أو أن الرابط غير صحيح.";
+              document.getElementById('loadingStatus').innerHTML = "❌ عذراً، لم يتم العثور على بيانات لهذه الشجرة.";
           } else if (data) {
               document.getElementById('loadingStatus').style.display = 'none';
               document.getElementById('treeDataDetails').style.display = 'block';
 
+              // 1. معالجة وعرض الصورة السحابية إن وجدت
+              const imgElement = document.getElementById('viewTreeImg');
+              if (data.image_url && data.image_url.trim() !== "") {
+                  imgElement.src = data.image_url;
+                  imgElement.style.display = "block";
+              } else {
+                  imgElement.style.display = "none";
+              }
+
+              // 2. التاريخ والعمر
+              const createdDate = new Date(data.created_at);
+              document.getElementById('viewDate').innerText = createdDate.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
+              const today = new Date();
+              const differenceInDays = Math.floor((today.getTime() - createdDate.getTime()) / (1000 * 3600 * 24));
+              document.getElementById('viewAge').innerText = differenceInDays === 0 ? "اليوم (حديثة)" : `منذ ${differenceInDays} يوم`;
+
+              // 3. تحديث شارات الحالة
+              const badge = document.getElementById('statusBadge');
+              const currentStatus = data.status || 'active';
+              if (currentStatus === 'success') {
+                  badge.innerText = "نجحت العملية وتم النقل 🔵"; badge.className = "badge badge-success";
+              } else if (currentStatus === 'failed') {
+                  badge.innerText = "فشلت العملية وجف الغصن 🔴"; badge.className = "badge badge-failed";
+              } else {
+                  badge.innerText = "قيد الانتظار / نشط 🟢"; badge.className = "badge badge-active";
+              }
+
+              // 4. النصيحة الحقلية التلقائية
+              const methodText = data.grafting_method.toLowerCase();
+              const tipBox = document.getElementById('tipBox');
+              if (methodText.includes('ترقيد')) {
+                  tipBox.innerText = "💡 نصيحة المفكرة: الترقيد الهوائي يحتاج عادة من 4 إلى 8 أسابيع لظهور الجذور. تفقد رطوبة التربة بانتظام دون فتح الكيس.";
+              } else if (methodText.includes('تطعيم') || methodText.includes('قلم')) {
+                  tipBox.innerText = "💡 نصيحة المفكرة: عمليات التطعيم تحتاج لمراقبة نقطة الالتحام ونمو البراعم الجديدة خلال أول 3 أسابيع لمنع جفاف الطعم.";
+              } else {
+                  tipBox.innerText = "💡 نصيحة المفكرة: تابع ري ونظافة محيط الشتلة لضمان استقرار ونمو الطعوم الحقلية بشكل ممتاز.";
+              }
+
+              // 5. تعبئة البيانات
               document.getElementById('viewTreeType').innerText = data.tree_type;
               document.getElementById('viewMethod').innerText = data.grafting_method;
               document.getElementById('viewNotes').innerText = data.notes ? data.notes : 'لا توجد ملاحظات إضافية.';
+              document.getElementById('updateNotesInput').value = data.notes ? data.notes : '';
+              document.getElementById('updateStatusSelect').value = currentStatus;
+          }
+      }
+
+      function toggleUpdateForm() {
+          const section = document.getElementById('updateSection');
+          section.style.display = section.style.display === 'block' ? 'none' : 'block';
+      }
+
+      async function submitTreeUpdate() {
+          const updatedNotes = document.getElementById('updateNotesInput').value.trim();
+          const updatedStatus = document.getElementById('updateStatusSelect').value;
+          
+          const { error } = await supabaseClient
+              .from('trees')
+              .update({ notes: updatedNotes, status: updatedStatus })
+              .eq('id', currentTreeId);
+
+          if (error) {
+              alert('خطأ أثناء التحديث السحابي: ' + error.message);
+          } else {
+              alert('✅ تم حفظ التحديثات والتغييرات سحابياً!');
+              location.reload();
           }
       }
     </script>
