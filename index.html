@@ -5,7 +5,10 @@
     <title>GreenTrack</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap'); body { font-family: 'Tajawal', sans-serif; }</style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+        body { font-family: 'Tajawal', sans-serif; }
+    </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
 
@@ -50,8 +53,11 @@
             const password = document.getElementById('auth-password').value;
             
             const { error } = await supabase.auth.signInWithPassword({ email, password });
-            if (error) alert(error.message);
-            else alert("تم الدخول بنجاح!");
+            if (error) {
+                alert('خطأ: ' + error.message);
+            } else {
+                alert("تم تسجيل الدخول بنجاح!");
+            }
         });
     </script>
 </body>
