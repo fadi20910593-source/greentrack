@@ -17,7 +17,7 @@
         <button id="lang-toggle" class="bg-white border px-4 py-1 rounded-full text-sm">English</button>
     </nav>
 
-    <div id="auth-container" class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-lg border">
+    <div id="auth-container" class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-lg border mt-10">
         <h1 class="text-xl font-bold text-center mb-6" id="text-title">سجل دخولك</h1>
         <form id="auth-form" class="space-y-4">
             <input type="email" id="auth-email" required class="w-full p-3 border rounded-xl" placeholder="البريد الإلكتروني">
@@ -27,7 +27,7 @@
     </div>
 
     <script>
-        // 1. التهيئة (مرة واحدة فقط)
+        // 1. إعداد Supabase (مرة واحدة فقط)
         const SUPABASE_URL = 'https://slunnljduvspmghgzrlc.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsdW5ubGpkdXZzcG1naGd6cmxjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyMTUxMDEsImV4cCI6MjA5Njc5MTEwMX0.LzNMNL4wKKCQFKds3_H3boc0FMPNX2qz646_eEfA-Pk';
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -46,18 +46,10 @@
             document.getElementById('submit-btn').innerText = isArabic ? 'تسجيل الدخول' : 'Sign In';
         });
 
-        // 3. تسجيل الدخول
+        // 3. منع إعادة تحميل الصفحة عند الضغط
         document.getElementById('auth-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
-            
-            const { error } = await supabase.auth.signInWithPassword({ email, password });
-            if (error) {
-                alert('خطأ: ' + error.message);
-            } else {
-                alert("تم تسجيل الدخول بنجاح!");
-            }
+            console.log("تم الضغط على دخول");
         });
     </script>
 </body>
