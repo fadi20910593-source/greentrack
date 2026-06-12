@@ -6,9 +6,14 @@
     <title>مُولّد الـ QR الذكي للمزارع</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f9f4; padding: 50px; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-block; }
-        button { background-color: #2e7d32; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; margin-top: 15px; }
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f9f4; padding: 20px; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-block; width: 100%; max-width: 400px; text-align: right; box-sizing: border-box; }
+        h2 { text-align: center; margin-bottom: 20px; color: #1b5e20; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
+        textarea { resize: vertical; height: 80px; }
+        button { background-color: #2e7d32; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; margin-top: 15px; width: 100%; font-weight: bold; }
         button:hover { background-color: #1b5e20; }
         #qrcode { margin-top: 20px; display: flex; justify-content: center; }
     </style>
@@ -17,23 +22,36 @@
 
     <div class="card">
         <h2>نظام GreenTrack الذكي 🌿</h2>
-        <p>اضغط على الزر لتوليد رمز QR لوصلة شجرة تجريبية:</p>
         
-<button onclick="saveTreeToDatabase('زيتون نبالي', 'ترقيد هوائي', 'تجربة أولى ناجحة سحابياً')">توليد الـ QR Code الآن</button>        
+        <div class="form-group">
+            <label for="treeType">🌳 نوع الشجرة:</label>
+            <input type="text" id="treeType" placeholder="مثال: زيتون نبالي، تين أسود...">
+        </div>
+
+        <div class="form-group">
+            <label for="graftingMethod">✂️ طريقة التطعيم / الترقيد:</label>
+            <input type="text" id="graftingMethod" placeholder="مثال: ترقيد هوائي، تطعيم بالقلم...">
+        </div>
+
+        <div class="form-group">
+            <label for="treeNotes">📝 ملاحظات إضافية:</label>
+            <textarea id="treeNotes" placeholder="اكتب أي ملاحظات عن حالة الشجرة هنا..."></textarea>
+        </div>
+        
+        <button onclick="handleFormSubmit()">توليد الـ QR Code الآن</button>        
+        
         <div id="qrcode"></div>
     </div>
 
     <script>
-        function generateMyQR() {
+        // دالة توليد الـ QR الحقيقية بناءً على الرابط المستلم من السيرفر
+        function generateMyQR(actualURL) {
             // تنظيف أي كود قديم
             document.getElementById("qrcode").innerHTML = "";
             
-            // رابط وهمي لشجرة ليمون تجريبية يحمل رقم معرف فريد
-            let demoTreeURL = "https://greentrack.com/scan/tree-lemon-001";
-            
-            // تشغيل المكتبة لتوليد الكود
+            // تشغيل المكتبة لتوليد الكود بالرابط الحقيقي
             new QRCode(document.getElementById("qrcode"), {
-                text: demoTreeURL,
+                text: actualURL,
                 width: 180,
                 height: 180,
                 colorDark : "#1b5e20", // لون الـ QR أخضر زراعي
@@ -41,46 +59,59 @@
             });
         }
     </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script>
-  // بيانات مشروع GreenTrack الخاصة بك
-  const SUPABASE_URL = 'https://slunnljduvspmghgzrlc.supabase.co';
-  
-  // المفتاح العام الصحيح الخاص بك (قم بنسخه بالكامل عبر الزر في المتصفح إذا لم يكن كاملاً أدناه)
-  const SUPABASE_ANON_KEY = 'sb_publishable_TcEUmD0fKlopTF2MgnQu4g_nf9ui0vs';
+    <script>
+      // بيانات مشروع GreenTrack الخاصة بك
+      const SUPABASE_URL = 'https://slunnljduvspmghgzrlc.supabase.co';
+      const SUPABASE_ANON_KEY = 'sb_publishable_TcEUmD0fKlopTF2MgnQu4g_nf9ui0vs';
 
-  // استخدام اسم متغير فريد لمنع تكرار التعريف والتضارب
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      // اتصال قاعدة البيانات
+      const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  async function saveTreeToDatabase(treeType, method, notes) {
-    const { data, error } = await supabaseClient
-      .from('trees')
-      .insert([
-        { 
-          tree_type: treeType, 
-          grafting_method: method, 
-          notes: notes 
-        }
-      ])
-      .select();
+      // دالة وسيطة لجمع ما كتبه المزارع في الخانات وإرساله
+      function handleFormSubmit() {
+          const treeType = document.getElementById("treeType").value.trim();
+          const method = document.getElementById("graftingMethod").value.trim();
+          const notes = document.getElementById("treeNotes").value.trim();
 
-    if (error) {
-      console.error('خطأ في حفظ البيانات:', error.message);
-      alert('حدث خطأ أثناء الحفظ في السيرفر: ' + error.message);
-    } else {
-      console.log('تم حفظ الشجرة بنجاح في السيرفر السحابي!', data);
-      const treeId = data[0].id;
-      const qrUrl = `https://fadi20910593-source.github.io/greentrack/?id=${treeId}`;
-      
-      // التحقق من وجود دالة توليد الـ QR لعرضها على الشاشة
-      if (typeof generateMyQR === "function") {
-         generateMyQR(qrUrl);
-      } else {
-         alert("تم الحفظ بنجاح! رابط الـ QR الفريد هو: " + qrUrl);
+          // التأكد أن المزارع أدخل البيانات الأساسية على الأقل
+          if (!treeType || !method) {
+              alert("رجاءً قم بتعبئة نوع الشجرة وطريقة التطعيم أولاً!");
+              return;
+          }
+
+          // إرسال البيانات الحقيقية للدالة السحابية
+          saveTreeToDatabase(treeType, method, notes);
       }
-    }
-  }
-</script>
+
+      async function saveTreeToDatabase(treeType, method, notes) {
+        const { data, error } = await supabaseClient
+          .from('trees')
+          .insert([
+            { 
+              tree_type: treeType, 
+              grafting_method: method, 
+              notes: notes 
+            }
+          ])
+          .select();
+
+        if (error) {
+          console.error('خطأ في حفظ البيانات:', error.message);
+          alert('حدث خطأ أثناء الحفظ في السيرفر: ' + error.message);
+        } else {
+          console.log('تم حفظ الشجرة بنجاح في السيرفر السحابي!', data);
+          const treeId = data[0].id;
+          
+          // الرابط الحقيقي للشجرة باستخدام الـ id الجديد
+          const qrUrl = `https://fadi20910593-source.github.io/greentrack/?id=${treeId}`;
+          
+          // توليد الـ QR وعرضه فوراً أمام المزارع على الشاشة
+          generateMyQR(qrUrl);
+        }
+      }
+    </script>
 </body>
 </html>
