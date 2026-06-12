@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مُولّد الـ QR الذكي للمزارع</title>
+    <title>نظام GreenTrack الذكي 🌿</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f9f4; padding: 20px; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-block; width: 100%; max-width: 400px; text-align: right; box-sizing: border-box; }
-        h2 { text-align: center; margin-bottom: 20px; color: #1b5e20; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-block; width: 100%; max-width: 400px; text-align: right; box-sizing: border-box; vertical-align: top; }
+        h2 { text-align: center; margin-bottom: 20px; color: #1b5e20; margin-top: 0; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; }
         input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
@@ -16,6 +16,13 @@
         button { background-color: #2e7d32; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; margin-top: 15px; width: 100%; font-weight: bold; }
         button:hover { background-color: #1b5e20; }
         #qrcode { margin-top: 20px; display: flex; justify-content: center; }
+        
+        /* تنسيق واجهة عرض بيانات الشجرة الممسوحة */
+        .info-display { display: none; text-align: right; }
+        .info-item { background: #f9f9f9; padding: 12px; border-right: 4px solid #2e7d32; margin-bottom: 10px; border-radius: 0 5px 5px 0; }
+        .info-label { font-size: 12px; color: #666; font-weight: bold; display: block; }
+        .info-value { font-size: 16px; color: #222; font-weight: bold; margin-top: 3px; display: block; }
+        #loadingStatus { font-weight: bold; color: #2e7d32; text-align: center; padding: 20px 0; }
     </style>
 </head>
 <body>
@@ -23,27 +30,50 @@
     <div class="card">
         <h2>نظام GreenTrack الذكي 🌿</h2>
         
-        <div class="form-group">
-            <label for="treeType">🌳 نوع الشجرة:</label>
-            <input type="text" id="treeType" placeholder="مثال: تفاح، لوز، زيتون...">
+        <div id="inputFormSection">
+            <div class="form-group">
+                <label for="treeType">🌳 نوع الشجرة:</label>
+                <input type="text" id="treeType" placeholder="مثال: تفاح، لوز، زيتون...">
+            </div>
+
+            <div class="form-group">
+                <label for="graftingMethod">✂️ طريقة التطعيم / الترقيد:</label>
+                <input type="text" id="graftingMethod" placeholder="مثال: ترقيد هوائي، تطعيم بالقلم...">
+            </div>
+
+            <div class="form-group">
+                <label for="treeNotes">📝 ملاحظات إضافية:</label>
+                <textarea id="treeNotes" placeholder="اكتب أي ملاحظات عن حالة الشجرة هنا..."></textarea>
+            </div>
+            
+            <button onclick="handleFormSubmit()">توليد الـ QR Code الآن</button>        
+            
+            <div id="qrcode"></div>
         </div>
 
-        <div class="form-group">
-            <label for="graftingMethod">✂️ طريقة التطعيم / الترقيد:</label>
-            <input type="text" id="graftingMethod" placeholder="مثال: ترقيد هوائي، تطعيم بالقلم...">
+        <div id="displaySection" class="info-display">
+            <div id="loadingStatus">جاري قراءة سحابة الشجرة... 🔄</div>
+            
+            <div id="treeDataDetails" style="display: none;">
+                <div class="info-item">
+                    <span class="info-label">🌳 نوع الشجرة المتواجدة:</span>
+                    <span id="viewTreeType" class="info-value">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">✂️ طريقة التطعيم المستخدمة:</span>
+                    <span id="viewMethod" class="info-value">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">📝 ملاحظات وتفاصيل حقلية:</span>
+                    <span id="viewNotes" class="info-value">-</span>
+                </div>
+                <button onclick="window.location.href=window.location.pathname">إدخال شجرة جديدة ➕</button>
+            </div>
         </div>
-
-        <div class="form-group">
-            <label for="treeNotes">📝 ملاحظات إضافية:</label>
-            <textarea id="treeNotes" placeholder="اكتب أي ملاحظات عن حالة الشجرة هنا..."></textarea>
-        </div>
-        
-        <button onclick="handleFormSubmit()">توليد الـ QR Code الآن</button>        
-        
-        <div id="qrcode"></div>
     </div>
 
     <script>
+        // دالة توليد كود الـ QR
         function generateMyQR(actualURL) {
             document.getElementById("qrcode").innerHTML = "";
             new QRCode(document.getElementById("qrcode"), {
@@ -59,14 +89,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-      // تم تثبيت رابط مشروعك الصحيح هنا بناءً على لوحة التحكم لديك
       const SUPABASE_URL = 'https://slunnljduvspmghgzrlc.supabase.co';
-      
-      // امسح الكلمة بالأسفل وضع مفتاحك النظيف المنسوخ بالزر مباشرة بدون أي زيادات
+      // ⚠️ ضع مفتاح anon_key الصحيح والنظيف هنا بين علامتي التنصيص
       const SUPABASE_ANON_KEY = 'sb_publishable_TcEUmD0fKLopTF2MgnQu4g_nf9ui0vs';
 
       const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+      // دالة جمع بيانات النموذج وإرسالها
       function handleFormSubmit() {
           const treeType = document.getElementById("treeType").value.trim();
           const method = document.getElementById("graftingMethod").value.trim();
@@ -76,31 +105,63 @@
               alert("رجاءً قم بتعبئة نوع الشجرة وطريقة التطعيم أولاً!");
               return;
           }
-
           saveTreeToDatabase(treeType, method, notes);
       }
 
+      // حفظ الشجرة وتوليد رابط الـ QR
       async function saveTreeToDatabase(treeType, method, notes) {
         const { data, error } = await supabaseClient
           .from('trees')
-          .insert([
-            { 
-              tree_type: treeType, 
-              grafting_method: method, 
-              notes: notes 
-            }
-          ])
+          .insert([{ tree_type: treeType, grafting_method: method, notes: notes }])
           .select();
 
         if (error) {
-          console.error('خطأ في حفظ البيانات:', error.message);
-          alert('حدث خطأ أثناء الحفظ في السيرفر: ' + error.message);
+          alert('حدث خطأ أثناء الحفظ: ' + error.message);
         } else {
-          console.log('تم حفظ الشجرة بنجاح في السيرفر السحابي!', data);
           const treeId = data[0].id;
           const qrUrl = `https://fadi20910593-source.github.io/greentrack/?id=${treeId}`;
           generateMyQR(qrUrl);
         }
+      }
+
+      // ========================================================
+      // 🔄 مرحلة الذكاء والقراءة: فحص الرابط عند تشغيل الصفحة
+      // ========================================================
+      window.addEventListener('DOMContentLoaded', () => {
+          const urlParams = new URLSearchParams(window.location.search);
+          const treeId = urlParams.get('id');
+
+          if (treeId) {
+              // إذا وُجد المعرّف (id) في الرابط، نقوم بتبديل الواجهات فوراُ
+              document.getElementById('inputFormSection').style.display = 'none';
+              document.getElementById('displaySection').style.display = 'block';
+              
+              // استدعاء دالة جلب البيانات من السيرفر السحابي
+              fetchTreeData(treeId);
+          }
+      });
+
+      // دالة جلب بيانات شجرة محددة وعرضها
+      async function fetchTreeData(id) {
+          const { data, error } = await supabaseClient
+              .from('trees')
+              .select('*')
+              .eq('id', id)
+              .single(); // جلب سطر واحد فقط يطابق الـ id
+
+          if (error) {
+              document.getElementById('loadingStatus').innerHTML = "❌ عذراً، لم يتم العثور على بيانات لهذه الشجرة أو أن الرابط غير صحيح.";
+              console.error(error.message);
+          } else if (data) {
+              // إخفاء عبارة التحميل وإظهار بطاقة البيانات
+              document.getElementById('loadingStatus').style.display = 'none';
+              document.getElementById('treeDataDetails').style.display = 'block';
+
+              // حقن البيانات في العناصر المخصصة لها بالواجهة
+              document.getElementById('viewTreeType').innerText = data.tree_type;
+              document.getElementById('viewMethod').innerText = data.grafting_method;
+              document.getElementById('viewNotes').innerText = data.notes ? data.notes : 'لا توجد ملاحظات إضافية.';
+          }
       }
     </script>
 </body>
