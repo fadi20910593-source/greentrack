@@ -41,21 +41,19 @@
             });
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-  // البيانات الرسمية لمشروع المسار الأخضر الخاص بك
   const SUPABASE_URL = 'https://slunnljduvspmghgzrlc.supabase.co';
-  
-  // انسخ المفتاح الكامل عبر زر النسخ في المتصفح وضعه بدلاً من النص أدناه
-  const SUPABASE_ANON_KEY = 'قُم_بلصق_مفتاح_sb_publishable_كاملاً_هنا';
+  // تأكد من وضع مفتاحك الخاص كاملاً هنا بدلاً من النص أدناه
+  const SUPABASE_ANON_KEY = 'sb_publishable_TcEUmD0fKLopTF2MgnQu4g_nf9ui0vs';
 
-  // إنشاء الاتصال الرسمي بالسيرفر
-  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  // قمنا بتغيير اسم المتغير هنا إلى supabaseClient لمنع التضارب
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // دالة ذكية لإضافة شجرة جديدة إلى قاعدة البيانات وتوليد الـ QR الخاص بها
   async function saveTreeToDatabase(treeType, method, notes) {
-    const { data, error } = await supabase
+    // استخدمنا الاسم الجديد supabaseClient هنا أيضاً
+    const { data, error } = await supabaseClient
       .from('trees')
       .insert([
         { 
@@ -72,12 +70,14 @@
     } else {
       console.log('تم حفظ الشجرة بنجاح في السيرفر السحابي!', data);
       const treeId = data[0].id;
-      
-      // هنا نقوم بإنشاء رابط الـ QR الفريد بناءً على الـ ID المستلم من قاعدة البيانات
       const qrUrl = `https://fadi20910593-source.github.io/greentrack/?id=${treeId}`;
       
-      // استدعاء دالة توليد وعرض الـ QR Code على الشاشة
-      generateQRCodeOnScreen(qrUrl);
+      // ملاحظة: تأكد من وجود دالة توليد الـ QR وعرضها على الشاشة أو استبدالها بـ generateMyQR(qrUrl) إن كانت هي المستخدمة
+      if (typeof generateQRCodeOnScreen === "function") {
+         generateQRCodeOnScreen(qrUrl);
+      } else {
+         alert("تم الحفظ بالسيرفر! رابط الشجرة: " + qrUrl);
+      }
     }
   }
 </script>
