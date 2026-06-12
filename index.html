@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl" id="html-root">
 <head>
     <meta charset="UTF-8">
-    <title>GreenTrack - Dashboard</title>
+    <title>GreenTrack</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap'); body { font-family: 'Tajawal', sans-serif; }</style>
@@ -10,7 +10,7 @@
 <body class="bg-gray-50 min-h-screen">
 
     <nav class="p-6 flex justify-between items-center max-w-4xl mx-auto flex-row-reverse">
-        <div class="flex items-center gap-2 text-green-600 font-bold text-xl">GreenTrack 🌿</div>
+        <div class="font-bold text-xl text-green-600">GreenTrack 🌿</div>
         <button id="lang-toggle" class="bg-white border px-4 py-1 rounded-full text-sm">English</button>
     </nav>
 
@@ -23,36 +23,29 @@
         </form>
     </div>
 
-    <div id="dashboard" class="hidden max-w-4xl mx-auto p-6">
-        <div class="bg-white p-6 rounded-2xl shadow border">
-            <h2 class="text-2xl font-bold mb-4">قائمة الأشجار الخاصة بك</h2>
-            <table class="w-full text-right border-collapse">
-                <thead><tr class="border-b"><th class="py-2">اسم الشجرة</th><th class="py-2">الموقع</th></tr></thead>
-                <tbody id="tree-list"><tr><td colspan="2" class="py-4 text-center text-gray-400">لا يوجد أشجار بعد..</td></tr></tbody>
-            </table>
-            <button id="logout-btn" class="mt-6 text-red-500 text-sm">تسجيل الخروج</button>
-        </div>
-    </div>
-
     <script>
-        const SUPABASE_URL = 'https://slunnljduvspmghgzrlc.supabase.co';
+                const SUPABASE_URL = 'https://slunnljduvspmghgzrlc.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsdW5ubGpkdXZzcG1naGd6cmxjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyMTUxMDEsImV4cCI6MjA5Njc5MTEwMX0.LzNMNL4wKKCQFKds3_H3boc0FMPNX2qz646_eEfA-Pk';
+
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // التبديل بين الواجهات
-        supabase.auth.onAuthStateChange((event, session) => {
-            if (session) {
-                document.getElementById('auth-container').classList.add('hidden');
-                document.getElementById('dashboard').classList.remove('hidden');
-            } else {
-                document.getElementById('auth-container').classList.remove('hidden');
-                document.getElementById('dashboard').classList.add('hidden');
-            }
+        // 1. منطق اللغة
+        const langToggle = document.getElementById('lang-toggle');
+        let isArabic = true;
+
+        langToggle.addEventListener('click', () => {
+            isArabic = !isArabic;
+            document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+            langToggle.innerText = isArabic ? 'English' : 'عربي';
+            document.getElementById('text-title').innerText = isArabic ? 'سجل دخولك' : 'Sign In';
+            document.getElementById('auth-email').placeholder = isArabic ? 'البريد الإلكتروني' : 'Email';
+            document.getElementById('auth-password').placeholder = isArabic ? 'كلمة المرور' : 'Password';
+            document.getElementById('submit-btn').innerText = isArabic ? 'تسجيل الدخول' : 'Sign In';
         });
 
-        // تسجيل الدخول
+        // 2. تسجيل الدخول ومنع الـ Refresh
         document.getElementById('auth-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
+            e.preventDefault(); 
             const { error } = await supabase.auth.signInWithPassword({
                 email: document.getElementById('auth-email').value,
                 password: document.getElementById('auth-password').value
@@ -60,8 +53,13 @@
             if (error) alert(error.message);
         });
 
-        // تسجيل الخروج
-        document.getElementById('logout-btn').onclick = () => supabase.auth.signOut();
+        // 3. التحقق من حالة الدخول
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (session) {
+                alert("تم الدخول بنجاح!");
+                // هنا سنضيف لاحقاً إظهار لوحة التحكم
+            }
+        });
     </script>
 </body>
 </html>
