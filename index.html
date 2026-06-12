@@ -207,9 +207,7 @@
           alert('حدث خطأ أثناء الحفظ: ' + error.message);
         } else {
           currentTreeId = data[0].id;
-          currentGeneratedUrl = `https://fadi20910593-source.github.io/greentrack/?id=${currentTreeId}`;
-          
-          document.getElementById("qrcode").innerHTML = "";
+currentGeneratedUrl = `${window.location.origin}${window.location.pathname}?id=${currentTreeId}`;          document.getElementById("qrcode").innerHTML = "";
           document.getElementById("printQRTarget").innerHTML = "";
           
           new QRCode(document.getElementById("qrcode"), { text: currentGeneratedUrl, width: 180, height: 180, colorDark : "#1b5e20", colorLight : "#ffffff" });
