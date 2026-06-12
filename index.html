@@ -25,7 +25,7 @@
         
         <div class="form-group">
             <label for="treeType">🌳 نوع الشجرة:</label>
-            <input type="text" id="treeType" placeholder="مثال: زيتون نبالي، تين أسود...">
+            <input type="text" id="treeType" placeholder="مثال: تفاح، لوز، زيتون...">
         </div>
 
         <div class="form-group">
@@ -44,17 +44,13 @@
     </div>
 
     <script>
-        // دالة توليد الـ QR الحقيقية بناءً على الرابط المستلم من السيرفر
         function generateMyQR(actualURL) {
-            // تنظيف أي كود قديم
             document.getElementById("qrcode").innerHTML = "";
-            
-            // تشغيل المكتبة لتوليد الكود بالرابط الحقيقي
             new QRCode(document.getElementById("qrcode"), {
                 text: actualURL,
                 width: 180,
                 height: 180,
-                colorDark : "#1b5e20", // لون الـ QR أخضر زراعي
+                colorDark : "#1b5e20",
                 colorLight : "#ffffff"
             });
         }
@@ -63,26 +59,24 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-      // بيانات مشروع GreenTrack الخاصة بك
+      // تم تثبيت رابط مشروعك الصحيح هنا بناءً على لوحة التحكم لديك
       const SUPABASE_URL = 'https://slunnljduvspmghgzrlc.supabase.co';
-      const SUPABASE_ANON_KEY = 'sb_publishable_TcEUmD0fKlopTF2MgnQu4g_nf9ui0vs';
+      
+      // امسح الكلمة بالأسفل وضع مفتاحك النظيف المنسوخ بالزر مباشرة بدون أي زيادات
+      const SUPABASE_ANON_KEY = 'sb_publishable_TcEUmD0fKLopTF2MgnQu4g_nf9ui0vs';
 
-      // اتصال قاعدة البيانات
       const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // دالة وسيطة لجمع ما كتبه المزارع في الخانات وإرساله
       function handleFormSubmit() {
           const treeType = document.getElementById("treeType").value.trim();
           const method = document.getElementById("graftingMethod").value.trim();
           const notes = document.getElementById("treeNotes").value.trim();
 
-          // التأكد أن المزارع أدخل البيانات الأساسية على الأقل
           if (!treeType || !method) {
               alert("رجاءً قم بتعبئة نوع الشجرة وطريقة التطعيم أولاً!");
               return;
           }
 
-          // إرسال البيانات الحقيقية للدالة السحابية
           saveTreeToDatabase(treeType, method, notes);
       }
 
@@ -104,11 +98,7 @@
         } else {
           console.log('تم حفظ الشجرة بنجاح في السيرفر السحابي!', data);
           const treeId = data[0].id;
-          
-          // الرابط الحقيقي للشجرة باستخدام الـ id الجديد
           const qrUrl = `https://fadi20910593-source.github.io/greentrack/?id=${treeId}`;
-          
-          // توليد الـ QR وعرضه فوراً أمام المزارع على الشاشة
           generateMyQR(qrUrl);
         }
       }
