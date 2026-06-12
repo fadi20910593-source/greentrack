@@ -5,10 +5,7 @@
     <title>GreenTrack</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
-        body { font-family: 'Tajawal', sans-serif; }
-    </style>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap'); body { font-family: 'Tajawal', sans-serif; }</style>
 </head>
 <body class="bg-gray-50 min-h-screen">
 
@@ -27,30 +24,38 @@
     </div>
 
     <script>
-        // 1. إعداد Supabase (مرة واحدة فقط)
+        // فقاعة مغلقة لمنع تكرار التعريفات
+        (function() {
         const SUPABASE_URL = 'https://slunnljduvspmghgzrlc.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsdW5ubGpkdXZzcG1naGd6cmxjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyMTUxMDEsImV4cCI6MjA5Njc5MTEwMX0.LzNMNL4wKKCQFKds3_H3boc0FMPNX2qz646_eEfA-Pk';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            
+            // تحقق إذا كانت المكتبة محملة
+            if (typeof supabase === 'undefined') return;
+            
+            const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // 2. منطق اللغة
-        const langToggle = document.getElementById('lang-toggle');
-        let isArabic = true;
+            // زر اللغة
+            const langToggle = document.getElementById('lang-toggle');
+            let isArabic = true;
+            langToggle.onclick = () => {
+                isArabic = !isArabic;
+                document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+                langToggle.innerText = isArabic ? 'English' : 'عربي';
+                document.getElementById('text-title').innerText = isArabic ? 'سجل دخولك' : 'Sign In';
+                document.getElementById('submit-btn').innerText = isArabic ? 'تسجيل الدخول' : 'Sign In';
+            };
 
-        langToggle.addEventListener('click', () => {
-            isArabic = !isArabic;
-            document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
-            langToggle.innerText = isArabic ? 'English' : 'عربي';
-            document.getElementById('text-title').innerText = isArabic ? 'سجل دخولك' : 'Sign In';
-            document.getElementById('auth-email').placeholder = isArabic ? 'البريد الإلكتروني' : 'Email';
-            document.getElementById('auth-password').placeholder = isArabic ? 'كلمة المرور' : 'Password';
-            document.getElementById('submit-btn').innerText = isArabic ? 'تسجيل الدخول' : 'Sign In';
-        });
-
-        // 3. منع إعادة تحميل الصفحة عند الضغط
-        document.getElementById('auth-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            console.log("تم الضغط على دخول");
-        });
+            // تسجيل الدخول
+            document.getElementById('auth-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const { error } = await sb.auth.signInWithPassword({
+                    email: document.getElementById('auth-email').value,
+                    password: document.getElementById('auth-password').value
+                });
+                if (error) alert(error.message);
+                else alert("تم الدخول!");
+            };
+        })();
     </script>
 </body>
 </html>
