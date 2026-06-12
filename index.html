@@ -6,23 +6,174 @@
     <title>نظام GreenTrack الذكي 🌿</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f9f4; padding: 20px; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-block; width: 100%; max-width: 400px; text-align: right; box-sizing: border-box; vertical-align: top; }
-        h2 { text-align: center; margin-bottom: 20px; color: #1b5e20; margin-top: 0; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; }
-        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
-        textarea { resize: vertical; height: 80px; }
-        button { background-color: #2e7d32; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; margin-top: 15px; width: 100%; font-weight: bold; }
-        button:hover { background-color: #1b5e20; }
-        #qrcode { margin-top: 20px; display: flex; justify-content: center; }
+        /* تحسينات التصميم العام والخلفية */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); 
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        /* تصميم البطاقة الرئيسية */
+        .card { 
+            background: #ffffff; 
+            padding: 35px 25px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(46, 125, 50, 0.15); 
+            width: 100%; 
+            max-width: 440px; 
+            text-align: right; 
+            box-sizing: border-box; 
+            transition: transform 0.3s ease;
+        }
         
-        /* تنسيق واجهة عرض بيانات الشجرة الممسوحة */
-        .info-display { display: none; text-align: right; }
-        .info-item { background: #f9f9f9; padding: 12px; border-right: 4px solid #2e7d32; margin-bottom: 10px; border-radius: 0 5px 5px 0; }
-        .info-label { font-size: 12px; color: #666; font-weight: bold; display: block; }
-        .info-value { font-size: 16px; color: #222; font-weight: bold; margin-top: 3px; display: block; }
-        #loadingStatus { font-weight: bold; color: #2e7d32; text-align: center; padding: 20px 0; }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* عنوان النظام */
+        h2 { 
+            text-align: center; 
+            margin-bottom: 25px; 
+            color: #1b5e20; 
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 0; 
+        }
+
+        /* مجموعات الحقول */
+        .form-group { 
+            margin-bottom: 20px; 
+        }
+
+        label { 
+            display: block; 
+            font-weight: 600; 
+            margin-bottom: 8px; 
+            color: #2e7d32; 
+            font-size: 15px;
+        }
+
+        /* تصميم خانات الإدخال والنصوص */
+        input, textarea { 
+            width: 100%; 
+            padding: 12px 15px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 10px; 
+            box-sizing: border-box; 
+            font-size: 15px; 
+            background-color: #fbfdfb;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #4caf50;
+            background-color: #ffffff;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.2);
+            outline: none;
+        }
+
+        textarea { 
+            resize: vertical; 
+            height: 90px; 
+        }
+
+        /* تصميم الأزرار الاحترافي */
+        button { 
+            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); 
+            color: white; 
+            border: none; 
+            padding: 14px 20px; 
+            font-size: 16px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            margin-top: 10px; 
+            width: 100%; 
+            font-weight: bold; 
+            box-shadow: 0 4px 10px rgba(27, 94, 32, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        button:hover { 
+            background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%); 
+            box-shadow: 0 6px 15px rgba(27, 94, 32, 0.4);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        /* منطقة الـ QR Code */
+        #qrcode { 
+            margin-top: 25px; 
+            display: flex; 
+            justify-content: center; 
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            border: 1px dashed #c8e6c9;
+        }
+        
+        #qrcode img {
+            border: 4px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* واجهة عرض البيانات عند المسح */
+        .info-display { 
+            display: none; 
+            text-align: right; 
+        }
+
+        .info-item { 
+            background: #f1f8e9; 
+            padding: 15px; 
+            border-right: 5px solid #2e7d32; 
+            margin-bottom: 12px; 
+            border-radius: 8px 0 0 8px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .info-label { 
+            font-size: 13px; 
+            color: #558b2f; 
+            font-weight: bold; 
+            display: block; 
+            margin-bottom: 4px;
+        }
+
+        .info-value { 
+            font-size: 17px; 
+            color: #1b5e20; 
+            font-weight: bold; 
+            display: block; 
+        }
+
+        #loadingStatus { 
+            font-weight: bold; 
+            color: #2e7d32; 
+            text-align: center; 
+            padding: 30px 0; 
+            font-size: 16px;
+        }
+
+        /* زر العودة المخصص لإدخال شجرة جديدة */
+        .btn-secondary {
+            background: linear-gradient(135deg, #78909c 0%, #546e7a 100%);
+            box-shadow: 0 4px 10px rgba(84, 110, 122, 0.3);
+        }
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #90a4ae 0%, #78909c 100%);
+            box-shadow: 0 6px 15px rgba(84, 110, 122, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -67,13 +218,12 @@
                     <span class="info-label">📝 ملاحظات وتفاصيل حقلية:</span>
                     <span id="viewNotes" class="info-value">-</span>
                 </div>
-                <button onclick="window.location.href=window.location.pathname">إدخال شجرة جديدة ➕</button>
+                <button class="btn-secondary" onclick="window.location.href=window.location.pathname">إدخال شجرة جديدة ➕</button>
             </div>
         </div>
     </div>
 
     <script>
-        // دالة توليد كود الـ QR
         function generateMyQR(actualURL) {
             document.getElementById("qrcode").innerHTML = "";
             new QRCode(document.getElementById("qrcode"), {
@@ -90,12 +240,11 @@
 
     <script>
       const SUPABASE_URL = 'https://slunnljduvspmghgzrlc.supabase.co';
-      // ⚠️ ضع مفتاح anon_key الصحيح والنظيف هنا بين علامتي التنصيص
+      // ⚠️ ضع مفتاح anon_key الخاص بك هنا النظيف والكامل
       const SUPABASE_ANON_KEY = 'sb_publishable_TcEUmD0fKLopTF2MgnQu4g_nf9ui0vs';
 
       const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // دالة جمع بيانات النموذج وإرسالها
       function handleFormSubmit() {
           const treeType = document.getElementById("treeType").value.trim();
           const method = document.getElementById("graftingMethod").value.trim();
@@ -108,7 +257,6 @@
           saveTreeToDatabase(treeType, method, notes);
       }
 
-      // حفظ الشجرة وتوليد رابط الـ QR
       async function saveTreeToDatabase(treeType, method, notes) {
         const { data, error } = await supabaseClient
           .from('trees')
@@ -124,40 +272,30 @@
         }
       }
 
-      // ========================================================
-      // 🔄 مرحلة الذكاء والقراءة: فحص الرابط عند تشغيل الصفحة
-      // ========================================================
       window.addEventListener('DOMContentLoaded', () => {
           const urlParams = new URLSearchParams(window.location.search);
           const treeId = urlParams.get('id');
 
           if (treeId) {
-              // إذا وُجد المعرّف (id) في الرابط، نقوم بتبديل الواجهات فوراُ
               document.getElementById('inputFormSection').style.display = 'none';
               document.getElementById('displaySection').style.display = 'block';
-              
-              // استدعاء دالة جلب البيانات من السيرفر السحابي
               fetchTreeData(treeId);
           }
       });
 
-      // دالة جلب بيانات شجرة محددة وعرضها
       async function fetchTreeData(id) {
           const { data, error } = await supabaseClient
               .from('trees')
               .select('*')
               .eq('id', id)
-              .single(); // جلب سطر واحد فقط يطابق الـ id
+              .single();
 
           if (error) {
               document.getElementById('loadingStatus').innerHTML = "❌ عذراً، لم يتم العثور على بيانات لهذه الشجرة أو أن الرابط غير صحيح.";
-              console.error(error.message);
           } else if (data) {
-              // إخفاء عبارة التحميل وإظهار بطاقة البيانات
               document.getElementById('loadingStatus').style.display = 'none';
               document.getElementById('treeDataDetails').style.display = 'block';
 
-              // حقن البيانات في العناصر المخصصة لها بالواجهة
               document.getElementById('viewTreeType').innerText = data.tree_type;
               document.getElementById('viewMethod').innerText = data.grafting_method;
               document.getElementById('viewNotes').innerText = data.notes ? data.notes : 'لا توجد ملاحظات إضافية.';
