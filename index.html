@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="html-root">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GreenTrack - نظام تتبع الأشجار الذكي</title>
+    <title>GreenTrack</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -11,127 +11,40 @@
         body { font-family: 'Tajawal', sans-serif; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col items-center justify-center p-4">
+<body class="bg-gray-50 text-gray-800 min-h-screen">
 
-    <div id="auth-container" class="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border border-gray-100 transition-all">
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-green-600 mb-2">GreenTrack 🌿</h1>
-            <p class="text-gray-500 text-sm" id="auth-subtitle">سجل دخولك لإدارة وتتبع أشجارك وطعومك الذكية</p>
+    <nav class="p-6 flex justify-between items-center max-w-4xl mx-auto">
+        <div class="flex items-center gap-2 text-green-600">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+            <span class="text-2xl font-bold tracking-tight">GreenTrack</span>
         </div>
+        <button id="lang-toggle" class="bg-white border px-4 py-1 rounded-full text-sm font-medium hover:bg-gray-100 transition">English</button>
+    </nav>
 
+    <div id="auth-container" class="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border border-gray-100 mx-auto mt-10">
+        <h1 class="text-2xl font-bold text-center mb-6" id="text-title">سجل دخولك</h1>
         <form id="auth-form" class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">البريد الإلكتروني</label>
-                <input type="email" id="auth-email" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition" placeholder="name@example.com">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">كلمة المرور</label>
-                <input type="password" id="auth-password" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition" placeholder="••••••••">
-            </div>
-            
-            <button type="submit" id="submit-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-xl shadow-lg shadow-green-600/20 transition cursor-pointer">
-                تسجيل الدخول
-            </button>
+            <input type="email" id="auth-email" required class="w-full px-4 py-3 rounded-xl border border-gray-200" placeholder="البريد الإلكتروني">
+            <input type="password" id="auth-password" required class="w-full px-4 py-3 rounded-xl border border-gray-200" placeholder="كلمة المرور">
+            <button type="submit" id="submit-btn" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold">تسجيل الدخول</button>
         </form>
-
-        <div class="text-center mt-6">
-            <button id="toggle-auth-mode" class="text-sm text-green-600 hover:underline font-medium cursor-pointer">
-                ليس لديك حساب؟ إنشاء حساب جديد
-            </button>
-        </div>
-    </div>
-
-    <div id="app-container" class="hidden w-full max-w-4xl bg-white rounded-2xl shadow-xl p-6 transition-all">
-        <div class="flex justify-between items-center border-b border-gray-100 pb-4 mb-6">
-            <div>
-                <h2 class="text-2xl font-bold text-gray-800">لوحة تحكم الأشجار الخاصة بك</h2>
-                <p class="text-xs text-gray-400 mt-1" id="user-display-email"></p>
-            </div>
-            <button id="logout-btn" class="bg-red-50 hover:bg-red-100 text-red-600 text-sm font-medium px-4 py-2 rounded-xl transition cursor-pointer">
-                تسجيل الخروج
-            </button>
-        </div>
-
-        <div class="p-12 text-center border-2 border-dashed border-gray-200 rounded-xl">
-            <p class="text-gray-500">تم تسجيل الدخول بنجاح! هنا سنعيد وضع نموذج إضافة الأشجار وتوليد الـ QR بعد ربطه بحسابك.</p>
-        </div>
     </div>
 
     <script>
-        // ⚠️ استبدل هذه القيم ببيانات مشروعك الخاصة من Supabase
         const SUPABASE_URL = 'https://slunnljduvspmghgzrlc.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsdW5ubGpkdXZzcG1naGd6cmxjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyMTUxMDEsImV4cCI6MjA5Njc5MTEwMX0.LzNMNL4wKKCQFKds3_H3boc0FMPNX2qz646_eEfA-Pk';
-        
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // عناصر الواجهة
-        const authContainer = document.getElementById('auth-container');
-        const appContainer = document.getElementById('app-container');
-        const authForm = document.getElementById('auth-form');
-        const emailInput = document.getElementById('auth-email');
-        const passwordInput = document.getElementById('auth-password');
-        const submitBtn = document.getElementById('submit-btn');
-        const toggleAuthModeBtn = document.getElementById('toggle-auth-mode');
-        const authSubtitle = document.getElementById('auth-subtitle');
-        const userDisplayEmail = document.getElementById('user-display-email');
-        const logoutBtn = document.getElementById('logout-btn');
+        // منطق اللغة
+        const langToggle = document.getElementById('lang-toggle');
+        let isArabic = true;
 
-        let isSignUpMode = false; // افتراضياً وضع تسجيل الدخول
-
-        // تبديل الواجهة بين (تسجيل الدخول) و (إنشاء حساب جديد)
-        toggleAuthModeBtn.addEventListener('click', () => {
-            isSignUpMode = !isSignUpMode;
-            if (isSignUpMode) {
-                submitBtn.innerText = 'إنشاء حساب جديد';
-                authSubtitle.innerText = 'قم بإنشاء حسابك المجاني للبدء بتتبع أشجارك';
-                toggleAuthModeBtn.innerText = 'لديك حساب بالفعل؟ سجل دخولك';
-            } else {
-                submitBtn.innerText = 'تسجيل الدخول';
-                authSubtitle.innerText = 'سجل دخولك لإدارة وتتبع أشجارك وطعومك الذكية';
-                toggleAuthModeBtn.innerText = 'ليس لديك حساب؟ إنشاء حساب جديد';
-            }
-        });
-
-        // إدارة إرسال النموذج (تسجيل الدخول أو الإنشاء)
-        authForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = emailInput.value;
-            const password = passwordInput.value;
-
-            if (isSignUpMode) {
-                // عملية إنشاء حساب جديد
-                const { data, error } = await supabase.auth.signUp({ email, password });
-                if (error) {
-                    alert('خطأ في إنشاء الحساب: ' + error.message);
-                } else {
-                    alert('تم إنشاء الحساب بنجاح! يرجى مراجعة بريدك الإلكتروني لتأكيد الحساب إذا تطلب الأمر.');
-                }
-            } else {
-                // عملية تسجيل الدخول لحساب قائم
-                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-                if (error) {
-                    alert('خطأ في تسجيل الدخول: ' + error.message);
-                }
-            }
-        });
-
-        // مراقبة حالة المستخدم تلقائياً (هل هو مسجل دخول أم لا؟)
-        supabase.auth.onAuthStateChange((event, session) => {
-            if (session) {
-                // المستخدم مسجل دخول -> إخفاء شاشة الـ Auth وإظهار التطبيق
-                authContainer.classList.add('hidden');
-                appContainer.classList.remove('hidden');
-                userDisplayEmail.innerText = `متصل باسم: ${session.user.email}`;
-            } else {
-                // المستخدم غير مسجل دخول -> إظهار شاشة الـ Auth وإخفاء التطبيق
-                authContainer.classList.remove('hidden');
-                appContainer.classList.add('hidden');
-            }
-        });
-
-        // عملية تسجيل الخروج
-        logoutBtn.addEventListener('click', async () => {
-            await supabase.auth.signOut();
+        langToggle.addEventListener('click', () => {
+            isArabic = !isArabic;
+            document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+            langToggle.innerText = isArabic ? 'English' : 'عربي';
+            document.getElementById('text-title').innerText = isArabic ? 'سجل دخولك' : 'Sign In';
+            document.getElementById('submit-btn').innerText = isArabic ? 'تسجيل الدخول' : 'Sign In';
         });
     </script>
 </body>
