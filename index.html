@@ -44,14 +44,15 @@
         .info-label { font-size: 13px; color: #558b2f; font-weight: bold; display: block; margin-bottom: 4px; }
         .info-value { font-size: 17px; color: #1b5e20; font-weight: bold; display: block; }
         
-        /* شاشات عرض الصور وتجميلها */
-        .tree-image-display { width: 100%; height: 200px; border-radius: 12px; object-fit: cover; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: none; }
+        .tree-image-display { width: 100%; height: 210px; border-radius: 12px; object-fit: cover; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: none; }
 
-        /* ملصقات الحالة الملونة */
+        /* ملصقات الحالات الفاخرة */
         .badge { display: inline-block; padding: 6px 12px; font-size: 13px; font-weight: bold; border-radius: 20px; color: white; margin-bottom: 15px; }
         .badge-active { background-color: #2e7d32; }
         .badge-success { background-color: #0288d1; }
         .badge-failed { background-color: #d32f2f; }
+
+        .counter-badge { display: inline-block; background: #fff3e0; color: #e65100; font-size: 13px; font-weight: bold; padding: 5px 12px; border-radius: 20px; margin-bottom: 15px; border: 1px solid #ffe0b2; }
 
         .tip-box { background-color: #e3f2fd; border-right: 5px solid #0288d1; padding: 12px; border-radius: 0 8px 8px 0; font-size: 14px; color: #0d47a1; margin-bottom: 15px; font-weight: 500; }
         
@@ -64,7 +65,6 @@
         #updateSection { background: #fffde7; padding: 15px; border-radius: 10px; border: 1px solid #fff59d; margin-top: 15px; display: none; }
         #loadingStatus { font-weight: bold; color: #2e7d32; text-align: center; padding: 30px 0; font-size: 16px; }
 
-        /* تهيئة نافذة الطباعة */
         @media print {
             body { background: white; padding: 0; display: block; }
             .card { box-shadow: none; max-width: 100%; padding: 0; }
@@ -92,8 +92,8 @@
             </div>
 
             <div class="form-group">
-                <label for="treeImage">📸 رابط صورة الشجرة (اختياري):</label>
-                <input type="url" id="treeImage" placeholder="ضع رابط صورة الشجرة هنا إذا توفر...">
+                <label for="treeImage">📸 رابط صورة الشجرة حقلية (اختياري):</label>
+                <input type="url" id="treeImage" placeholder="ضع رابط صورة الشجرة هنا لتظهر في بطاقتها...">
             </div>
 
             <div class="form-group">
@@ -115,10 +115,11 @@
             <div id="loadingStatus">جاري قراءة سحابة الشجرة... 🔄</div>
             
             <div id="treeDataDetails" style="display: none;">
-                <img id="viewTreeImg" class="tree-image-display" src="" alt="صورة الشجرة">
+                <img id="viewTreeImg" class="tree-image-display" src="" alt="صورة الشجرة الحقلية">
 
-                <div style="text-align: center;">
+                <div style="text-align: center; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
                     <span id="statusBadge" class="badge badge-active">قيد الانتظار / نشط 🟢</span>
+                    <span id="scanCounter" class="counter-badge">👁️ شوهدت: 0 مرات</span>
                 </div>
 
                 <div class="info-item">
@@ -148,7 +149,7 @@
                 
                 <div id="updateSection">
                     <div class="form-group">
-                        <label for="updateStatusSelect">🔄 تغيير حالة العملية:</label>
+                        <label for="updateStatusSelect">🔄 تغيير حالة العملية الحالية:</label>
                         <select id="updateStatusSelect">
                             <option value="active">قيد الانتظار / نشط 🟢</option>
                             <option value="success">نجحت العملية وتم النقل 🔵</option>
@@ -156,7 +157,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="updateNotesInput">📝 تحديث الملاحظات:</label>
+                        <label for="updateNotesInput">📝 تحديث سجل الملاحظات اليومية:</label>
                         <textarea id="updateNotesInput"></textarea>
                     </div>
                     <button onclick="submitTreeUpdate()">حفظ التعديل السحابي 💾</button>
@@ -175,8 +176,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
       const SUPABASE_URL = 'https://slunnljduvspmghgzrlc.supabase.co';
-      // ⚠️ ضع مفتاح anon_key النظيف والكامل الخاص بك هنا
-      const SUPABASE_ANON_KEY = 'sb_publishable_TcEUmD0fKLopTF2MgnQu4g_nf9ui0vs';
+      // ⚠️ ضع مفتاح anon_key الخاص بك هنا كاملاً ونظيفاً
+      const SUPABASE_ANON_KEY = 'sb_publishable_TcEUmD0fKLopTF2MgnQu4g_nf9ui0vs
+';
 
       const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       let currentTreeId = ""; 
@@ -198,7 +200,7 @@
       async function saveTreeToDatabase(treeType, method, imgUrl, notes) {
         const { data, error } = await supabaseClient
           .from('trees')
-          .insert([{ tree_type: treeType, grafting_method: method, notes: notes, status: 'active', image_url: imgUrl }])
+          .insert([{ tree_type: treeType, grafting_method: method, notes: notes, status: 'active', image_url: imgUrl, scan_count: 0 }])
           .select();
 
         if (error) {
@@ -216,13 +218,13 @@
           document.getElementById("printQRTitle").innerText = `مفكرة الأشجار: ${treeType} (${method})`;
           document.getElementById('btnCopyLink').style.display = "block";
           document.getElementById('btnPrintQR').style.display = "block";
-          alert('تم الحفظ سحابياً وتجهيز بطاقة الطباعة والـ QR!');
+          alert('تم الحفظ سحابياً وتجهيز بطاقة الطباعة والـ QR الحية!');
         }
       }
 
       function copyGeneratedLink() {
           navigator.clipboard.writeText(currentGeneratedUrl);
-          alert('📋 تم نسخ رابط الشجرة بنجاح!');
+          alert('📋 تم نسخ رابط الشجرة بنجاح للاستخدام والمشاركة!');
       }
 
       window.addEventListener('DOMContentLoaded', () => {
@@ -244,12 +246,17 @@
               .single();
 
           if (error) {
-              document.getElementById('loadingStatus').innerHTML = "❌ عذراً، لم يتم العثور على بيانات لهذه الشجرة.";
+              document.getElementById('loadingStatus').innerHTML = "❌ عذراً، لم يتم العثور على بيانات لهذه الشجرة أو أن الرابط غير مكتمل للـ UUID.";
           } else if (data) {
               document.getElementById('loadingStatus').style.display = 'none';
               document.getElementById('treeDataDetails').style.display = 'block';
 
-              // 1. معالجة وعرض الصورة السحابية إن وجدت
+              // زيادة عداد الزيارات الفعلي في الخلفية وتحديث العرض
+              const currentScans = data.scan_count || 0;
+              document.getElementById('scanCounter').innerText = `👁️ شوهدت: ${currentScans + 1} مرات`;
+              await supabaseClient.from('trees').update({ scan_count: currentScans + 1 }).eq('id', id);
+
+              // 1. إدارة الصورة الحقلية المرفوعة
               const imgElement = document.getElementById('viewTreeImg');
               if (data.image_url && data.image_url.trim() !== "") {
                   imgElement.src = data.image_url;
@@ -258,14 +265,14 @@
                   imgElement.style.display = "none";
               }
 
-              // 2. التاريخ والعمر
+              // 2. التاريخ وعداد العمر بالأيام
               const createdDate = new Date(data.created_at);
               document.getElementById('viewDate').innerText = createdDate.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
               const today = new Date();
               const differenceInDays = Math.floor((today.getTime() - createdDate.getTime()) / (1000 * 3600 * 24));
               document.getElementById('viewAge').innerText = differenceInDays === 0 ? "اليوم (حديثة)" : `منذ ${differenceInDays} يوم`;
 
-              // 3. تحديث شارات الحالة
+              // 3. شارات الحالات
               const badge = document.getElementById('statusBadge');
               const currentStatus = data.status || 'active';
               if (currentStatus === 'success') {
@@ -276,7 +283,7 @@
                   badge.innerText = "قيد الانتظار / نشط 🟢"; badge.className = "badge badge-active";
               }
 
-              // 4. النصيحة الحقلية التلقائية
+              // 4. النصائح الذكية
               const methodText = data.grafting_method.toLowerCase();
               const tipBox = document.getElementById('tipBox');
               if (methodText.includes('ترقيد')) {
@@ -287,7 +294,7 @@
                   tipBox.innerText = "💡 نصيحة المفكرة: تابع ري ونظافة محيط الشتلة لضمان استقرار ونمو الطعوم الحقلية بشكل ممتاز.";
               }
 
-              // 5. تعبئة البيانات
+              // 5. تعبئة الحقول الأساسية والتحديث
               document.getElementById('viewTreeType').innerText = data.tree_type;
               document.getElementById('viewMethod').innerText = data.grafting_method;
               document.getElementById('viewNotes').innerText = data.notes ? data.notes : 'لا توجد ملاحظات إضافية.';
@@ -313,7 +320,7 @@
           if (error) {
               alert('خطأ أثناء التحديث السحابي: ' + error.message);
           } else {
-              alert('✅ تم حفظ التحديثات والتغييرات سحابياً!');
+              alert('✅ تم حفظ التحديثات والتغييرات الحقلية سحابياً!');
               location.reload();
           }
       }
