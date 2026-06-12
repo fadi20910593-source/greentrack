@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" id="html-root">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <title>GreenTrack</title>
@@ -24,12 +24,12 @@
     </div>
 
     <script>
-                const SUPABASE_URL = 'https://slunnljduvspmghgzrlc.supabase.co';
+        // 1. التهيئة (مرة واحدة فقط)
+        const SUPABASE_URL = 'https://slunnljduvspmghgzrlc.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsdW5ubGpkdXZzcG1naGd6cmxjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyMTUxMDEsImV4cCI6MjA5Njc5MTEwMX0.LzNMNL4wKKCQFKds3_H3boc0FMPNX2qz646_eEfA-Pk';
-
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // 1. منطق اللغة
+        // 2. منطق اللغة
         const langToggle = document.getElementById('lang-toggle');
         let isArabic = true;
 
@@ -43,22 +43,15 @@
             document.getElementById('submit-btn').innerText = isArabic ? 'تسجيل الدخول' : 'Sign In';
         });
 
-        // 2. تسجيل الدخول ومنع الـ Refresh
+        // 3. تسجيل الدخول
         document.getElementById('auth-form').addEventListener('submit', async (e) => {
-            e.preventDefault(); 
-            const { error } = await supabase.auth.signInWithPassword({
-                email: document.getElementById('auth-email').value,
-                password: document.getElementById('auth-password').value
-            });
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) alert(error.message);
-        });
-
-        // 3. التحقق من حالة الدخول
-        supabase.auth.onAuthStateChange((event, session) => {
-            if (session) {
-                alert("تم الدخول بنجاح!");
-                // هنا سنضيف لاحقاً إظهار لوحة التحكم
-            }
+            else alert("تم الدخول بنجاح!");
         });
     </script>
 </body>
